@@ -8,8 +8,7 @@ import "core:strings"
 ARFFData :: struct {
 	relation:   string "@RELATION",
 	attributes: [dynamic]Attribute "@ATTRIBUTE",
-	xdata:      []byte "@DATA",
-	ydata:      []byte "@DATA",
+	data:       [dynamic][]string "@DATA",
 }
 
 Attribute :: union {
@@ -240,8 +239,7 @@ read :: proc(
 	/*************************************************************/
 	/* Parse and load the data instances according to the header */
 	/*************************************************************/
-	// TODO: Implement data instance parsing
-	/*for {
+	for {
 		line, err = bufio.reader_read_string(&r, '\n', context.temp_allocator)
 		if err != nil {
 			if err == os.ERROR_EOF {
@@ -252,20 +250,14 @@ read :: proc(
 				return data, okay
 			}
 		}
-		values := strings.split(line, ",", context.temp_allocator)
+		values := strings.split(line[:len(line) - 1], ",", context.allocator)
 		if len(values) != len(data.attributes) {
 			fmt.println("Parsing Error :: Invalid number of values in data instance :: ", line)
 			fmt.println("See ", instance_reqs, " for more information.")
 			return data, okay
 		}
-		for value, idx in values {
-			switch id := typeid_of(data.attributes[idx]); id {
-			case NumericAttribute:
-
-			}
-
-		}
-	}*/
+		append(&data.data, values)
+	}
 
 	okay = true
 	return data, okay
